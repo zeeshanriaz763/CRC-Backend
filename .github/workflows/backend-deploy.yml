@@ -48,4 +48,4 @@ jobs:
 
     - name: Deploy ARM Template
       run: |
-        az deployment group validate --resource-group Class-Zeeshan --template-file ./merged_template.json --parameters ./merged_parameters.json
+        az deployment group validate --resource-group Class-Zeeshan --template-file merged_template.json --parameters merged_parameters.json

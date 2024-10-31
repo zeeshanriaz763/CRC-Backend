@@ -1,0 +1,18 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "databaseAccounts_zeeshancosmos_name": {
+      "value": "cv" 
+    },
+    "sites_zeeshan_name": {
+      "value": "zeeshanriaz"  
+    },
+    "serverfarms_ASP_zeeshan_externalid": {
+      "value": "/subscriptions/5e7dee80-e445-486a-b749-2a2e6f43e1fb/resourceGroups/Class-Zeeshan/providers/Microsoft.Web/serverfarms/zeeshan"  
+    },
+    "storageAccounts_zeeshanstorage_name": {
+      "value": "zeeshan"  
+    }
+  }
+}

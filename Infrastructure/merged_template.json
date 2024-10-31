@@ -1,0 +1,158 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "databaseAccounts_zeeshancosmos_name": {
+      "defaultValue": "cv",  
+      "type": "String"
+    },
+    "sites_zeeshan_name": {
+      "defaultValue": "zeeshanriaz", 
+      "type": "String"
+    },
+    "serverfarms_ASP_zeeshan_externalid": {
+      "defaultValue": "/subscriptions/5e7dee80-e445-486a-b749-2a2e6f43e1fb/resourceGroups/Class-Zeeshan/providers/Microsoft.Web/serverfarms/zeeshan",
+      "type": "String"
+    },
+    "storageAccounts_zeeshanstorage_name": {
+      "defaultValue": "zeeshan", 
+      "type": "String"
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2023-05-01",
+      "name": "[parameters('storageAccounts_zeeshanstorage_name')]",
+      "location": "southindia",
+      "sku": {
+        "name": "Standard_LRS",
+        "tier": "Standard"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "dnsEndpointType": "Standard",
+        "defaultToOAuthAuthentication": false,
+        "publicNetworkAccess": "Enabled",
+        "allowCrossTenantReplication": false,
+        "minimumTlsVersion": "TLS1_2",
+        "allowBlobPublicAccess": false,
+        "allowSharedKeyAccess": true,
+        "largeFileSharesState": "Enabled",
+        "networkAcls": {
+          "bypass": "AzureServices",
+          "virtualNetworkRules": [],
+          "ipRules": [],
+          "defaultAction": "Allow"
+        },
+        "supportsHttpsTrafficOnly": true,
+        "encryption": {
+          "requireInfrastructureEncryption": false,
+          "services": {
+            "file": {
+              "keyType": "Account",
+              "enabled": true
+            },
+            "blob": {
+              "keyType": "Account",
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        },
+        "accessTier": "Hot",
+        "customDomain": {
+          "name": "www.zeeshandevops.online"  
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices",
+      "apiVersion": "2023-05-01",
+      "name": "[concat(parameters('storageAccounts_zeeshanstorage_name'), '/default')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_zeeshanstorage_name'))]"
+      ],
+      "sku": {
+        "name": "Standard_LRS",
+        "tier": "Standard"
+      },
+      "properties": {
+        "containerDeleteRetentionPolicy": {
+          "enabled": true,
+          "days": 7
+        },
+        "cors": {
+          "corsRules": []
+        },
+        "deleteRetentionPolicy": {
+          "allowPermanentDelete": false,
+          "enabled": true,
+          "days": 7
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2021-02-01",
+      "name": "[parameters('sites_zeeshan_name')]",
+      "location": "southindia",
+      "sku": {
+        "name": "S1",
+        "tier": "Standard",
+        "capacity": 1
+      },
+      "properties": {
+        "name": "[parameters('sites_zeeshan_name')]"
+      }
+    },
+    {
+      "type": "Microsoft.DocumentDB/databaseAccounts",
+      "apiVersion": "2023-04-15",
+      "name": "[parameters('databaseAccounts_zeeshancosmos_name')]",
+      "location": "southindia",
+      "kind": "GlobalDocumentDB",
+      "properties": {
+        "databaseAccountOfferType": "Standard",
+        "consistencyPolicy": {
+          "defaultConsistencyLevel": "Session"
+        },
+        "locations": [
+          {
+            "locationName": "southindia",
+            "failoverPriority": 0
+          }
+        ],
+        "isVirtualNetworkFilterEnabled": false,
+        "enableMultipleWriteLocations": false,
+        "disableKeyBasedMetadataWriteAccess": false
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/functions",
+      "apiVersion": "2022-03-01",
+      "name": "[concat(parameters('sites_zeeshan_name'), '/http_triggerzeeshan')]", 
+      "location": "southindia",
+      "properties": {
+        "scriptFile": "index.js",  
+        "entryPoint": "yourFunction",  
+        "config": {
+          "bindings": [
+            {
+              "type": "httpTrigger",
+              "direction": "in",
+              "authLevel": "function",
+              "methods": ["get", "post"],
+              "route": "http_triggerzeeshan"
+            },
+            {
+              "type": "http",
+              "direction": "out"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
